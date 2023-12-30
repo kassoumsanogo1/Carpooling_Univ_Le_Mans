@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+<meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<title>Error Register</title>
+</head>
+
+<body class="bg-light">
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-light "style="background-color: #293878; color: white; border-bottom: 1px solid #fff;">
+    <a class="navbar-brand text-white" href="#">Carpooling </a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link text-white" th:href="@{/home}">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" th:href="@{/creer-annonce}">AddTrips</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" th:href="@{/liste-trajets-user}">MyTrips</a>
+            </li>
+             <li class="nav-item">
+                <a class="nav-link text-white" th:href="@{/liste-annonce}">SeeTrips</a>
+            </li>
+            <li>
+        <form th:action="@{/logout}" method="POST">
+			<input type="submit"  value="Logout" class="btn btn-danger btn-lg"></input>
+		</form></li>
+        </ul>
+    </div>
+</nav>
+
+
+
+<div class="container py-5 bg-light " style=" opacity:0.95;margin-top: 200px;   width: 30%;  background-image: url('images/login_background.jpg');background-size: cover">
+
+
+	<p>Incorect Username , You are not in our database?
+		<a href="/"> Login</a></p>
+
+</div>
+<body>
+</html>

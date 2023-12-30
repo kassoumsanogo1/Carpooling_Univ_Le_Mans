@@ -1,0 +1,35 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+<meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<title>Error Register</title>
+</head>
+
+<body class="bg-light">
+
+<body style="background-image: url('images/backgr.png'); background-size: cover">
+
+<div class="container py-5 bg-light " style="margin-top:80px; opacity:0.95">
+
+  <div  style="display: inline-block; margin-left: 35%; width: 100%; ">
+    <h1 style="right:1%;position:relative;">Les details de cette Annonce</h1>
+
+
+        <p style="left:3%;position:relative;">Normalement votre trajet va durer <span style="color:#FF0000;" th:text="${annonce.duree}" /></span></p>
+    <p style="left:1%;position:relative;">Verifiez quand-même le temps actuel/le trajet avec cette carte</p>
+
+    <span style="left:2%;position:relative;" th:utext="${link}"></span>
+<p style="left:1%;position:relative;">Les commentaires du conducteur: <span style="color:#008000;" th:text="${annonce.commentaire}" /></p>
+  </div>
+
+</div>
+
+
+
+
+</body>
+</html>
