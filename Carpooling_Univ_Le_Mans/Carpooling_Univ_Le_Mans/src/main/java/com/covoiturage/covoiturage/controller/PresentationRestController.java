@@ -351,4 +351,69 @@ public void accepteProposition(int userIdPropose, int annonceId) throws Malforme
         String link="\t<iframe src=\"https://www.google.com/maps/embed/v1/directions?key=AIzaSyBN4_F3cBbadQ4x1PqZf6_OCktum1dmkJg&origin="+theAnnonce.getDepart()+"&destination="+theAnnonce.getArrive()+"&avoid=tolls|highways\" width=\"400\" height=\"350\" style=\"border:0;\" allowfullscreen=\"\" loading=\"lazy\" referrerpolicy=\"no-referrer-when-downgrade\"></iframe>\n";
         return  link;
    }
+
+    public void getUserInfosForAnnonces(List<Annonce> annonces, List<String> userNames, List<String> userEmails) 
+        throws MalformedURLException, JsonProcessingException {
+        for (Annonce annonce : annonces) {
+            User user = this.findByIdUser(annonce.getUserId());
+            userNames.add(user.getFirstName() + " " + user.getLastName());
+            userEmails.add(user.getEmail());
+        }
+    }
+
+    public void ListeDesTrajets(List<Annonce> theAnnonces, List<Integer> lesStatus, List<String> userNames, List<String> userEmails) 
+        throws MalformedURLException, JsonProcessingException {
+        List<Trajet> theTrajets = this.findAllTrajets();
+        int userId = this.getCurrentUserId();
+        List<Integer> theAnnoncesId = new ArrayList<>();
+        
+        for (int i = 0; i < theTrajets.size(); i++) {
+            if (theTrajets.get(i).getUserId() == userId) {
+                theAnnoncesId.add(theTrajets.get(i).getAnnonceId());
+                lesStatus.add(theTrajets.get(i).getEstAccepte());
+            }
+        }
+        
+        for (int i = 0; i < theAnnoncesId.size(); i++) {
+            Annonce annonce = this.findByIdAnnonce(theAnnoncesId.get(i));
+            theAnnonces.add(annonce);
+            User user = this.findByIdUser(annonce.getUserId());
+            userNames.add(user.getFirstName() + " " + user.getLastName());
+            userEmails.add(user.getEmail());
+        }
+    }
+
+    public void listeAnnonceAffichage(List<Annonce> theAnnonces, List<Integer> lastStatus, List<String> userNames, List<String> userEmails) 
+        throws MalformedURLException, JsonProcessingException {
+        List<Trajet> trAll=  this.findAllTrajets();
+        List<Integer> annonceIds= new ArrayList<>();
+        List<Integer> lesStatus= new ArrayList<>();
+        for (int i = 0; i < trAll.size(); i++) {
+            //si utilisateur a choisi cette annonec
+            if(trAll.get(i).getUserId()==this.getCurrentUserId()){
+                annonceIds.add(trAll.get(i).getAnnonceId());
+                lesStatus.add(trAll.get(i).getEstAccepte());
+                //0-> rien, 1->accepté, 2-> refusé, 3->vous êtes le conducteur 4-> demande envoyée
+            }
+            else {
+                annonceIds.add(-1);
+                lesStatus.add(0);
+            }
+        }
+        for (int i = 0; i < theAnnonces.size(); i++) {
+            boolean trouve=false;
+            for (int j = 0; j < annonceIds.size(); j++) {
+                if (theAnnonces.get(i).getId() ==annonceIds.get(j) && trouve==false){
+                    lastStatus.add(lesStatus.get(j));
+                    trouve=true;
+                }
+            }
+            if(trouve==false){
+                lastStatus.add(0);
+            }
+        }
+        
+        // Add user info
+        getUserInfosForAnnonces(theAnnonces, userNames, userEmails);
+    }
 }

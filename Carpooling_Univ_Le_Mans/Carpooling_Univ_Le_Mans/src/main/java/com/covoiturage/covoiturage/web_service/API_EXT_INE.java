@@ -8,17 +8,49 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
+import javax.net.ssl.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.cert.X509Certificate;
 import java.util.*;
 
 public class API_EXT_INE {
     Logger logger = LoggerFactory.getLogger(UserController.class);
-    public  String getJson(URL url) {
+
+    private void disableSSLVerification() {
+        try {
+            // Create a trust manager that does not validate certificate chains
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
+                    public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                    }
+                    public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                    }
+                }
+            };
+
+            // Install the all-trusting trust manager
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+            // Create all-trusting host name verifier
+            HostnameVerifier allHostsValid = (hostname, session) -> true;
+            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String getJson(URL url) {
+        disableSSLVerification(); // Add this line to disable SSL verification
         try (InputStream input = url.openStream()) {
             InputStreamReader isr = new InputStreamReader(input);
             BufferedReader reader = new BufferedReader(isr);
@@ -29,7 +61,8 @@ public class API_EXT_INE {
             }
             return json.toString();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.error("Erreur lors de l'appel à l'URL: " + url + " - " + e.getMessage());
+            throw new RuntimeException("Erreur lors de l'appel à l'API: " + e.getMessage(), e);
         }
     }
 
@@ -41,7 +74,87 @@ public class API_EXT_INE {
         return listUsersAPI;
     }
 
-    public  List<Double> coordinateAPI(String origine, String destionation) throws MalformedURLException, JsonProcessingException {
+    public List<Double> coordinateAPI(String origine, String destination) throws JsonProcessingException {
+        System.out.println("Recherche des coordonnées pour: " + origine + " -> " + destination);
+        
+        RestTemplate restTemplate = new RestTemplate();
+        
+        // Encodage des adresses pour l'URL
+        String encodedOrigine = origine.replace(" ", "+");
+        String encodedDestination = destination.replace(" ", "+");
+        
+        // Appel à l'API pour l'origine
+        String urlOrigine = "https://api-adresse.data.gouv.fr/search/?q=" + encodedOrigine + "&limit=1";
+        ResponseEntity<Map> responseOrigine = restTemplate.getForEntity(urlOrigine, Map.class);
+        
+        // Appel à l'API pour la destination
+        String urlDestination = "https://api-adresse.data.gouv.fr/search/?q=" + encodedDestination + "&limit=1";
+        ResponseEntity<Map> responseDestination = restTemplate.getForEntity(urlDestination, Map.class);
+        
+        List<Double> coords = new ArrayList<>();
+        
+        try {
+            // Extraction des coordonnées de l'origine
+            List<Map<String, Object>> featuresOrigine = (List<Map<String, Object>>) responseOrigine.getBody().get("features");
+            if (!featuresOrigine.isEmpty()) {
+                Map<String, Object> geometryOrigine = (Map<String, Object>) featuresOrigine.get(0).get("geometry");
+                List<Double> coordinatesOrigine = (List<Double>) geometryOrigine.get("coordinates");
+                coords.add(coordinatesOrigine.get(1)); // latitude
+                coords.add(coordinatesOrigine.get(0)); // longitude
+            }
+            
+            // Extraction des coordonnées de la destination
+            List<Map<String, Object>> featuresDestination = (List<Map<String, Object>>) responseDestination.getBody().get("features");
+            if (!featuresDestination.isEmpty()) {
+                Map<String, Object> geometryDestination = (Map<String, Object>) featuresDestination.get(0).get("geometry");
+                List<Double> coordinatesDestination = (List<Double>) geometryDestination.get("coordinates");
+                coords.add(coordinatesDestination.get(1)); // latitude
+                coords.add(coordinatesDestination.get(0)); // longitude
+            }
+            
+            System.out.println("Coordonnées trouvées: " + coords);
+            return coords;
+            
+        } catch (Exception e) {
+            System.out.println("Erreur lors de l'extraction des coordonnées: " + e.getMessage());
+            throw new JsonProcessingException(e.getMessage()) {};
+        }
+    }
+
+    public String dureeAPI(double latitude1,double longitude1, double latitude2,double longitude2) throws JsonProcessingException {
+        System.out.println("Début de dureeAPI avec coordonnées:");
+        System.out.println("Origine: " + latitude1 + "," + longitude1);
+        System.out.println("Destination: " + latitude2 + "," + longitude2);
+        
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization","prj_live_pk_280ee05fafb20726b59d20ca99f945c6d6a4c2d9");
+        
+        String createPersonUrl = "https://api.radar.io/v1/route/matrix?origins="+latitude1+","+longitude1+"&destinations="+latitude2+","+longitude2+"&mode=car&units=metric";
+        System.out.println("URL de l'API: " + createPersonUrl);
+        
+        HttpEntity<String> request = new HttpEntity<String>(headers);
+        System.out.println("Headers: " + headers);
+        
+        try {
+            ResponseEntity<HashMap> result = restTemplate.exchange(createPersonUrl, HttpMethod.GET, request, HashMap.class);
+            System.out.println("Code de réponse: " + result.getStatusCode());
+            System.out.println("Corps de la réponse: " + result.getBody());
+            
+            Map<String,ArrayList<ArrayList<Map<String,Map<String,String>>>>> list2=result.getBody();
+            String duree=list2.get("matrix").get(0).get(0).get("duration").get("text");
+            System.out.println("Durée extraite: " + duree);
+            return duree;
+        } catch (Exception e) {
+            System.out.println("Erreur lors de l'appel API: " + e.getMessage());
+            e.printStackTrace();
+            throw new JsonProcessingException(e.getMessage()) {};
+        }
+    }
+
+
+    public  List<Double> coordinateAPI1(String origine, String destionation) throws MalformedURLException, JsonProcessingException {
         URL url=new URL("https://fr.distance24.org/route.json?stops="+origine+"|"+destionation+"");
         String reponse= this.getJson(url);
         Map<String, ArrayList<Map<String,Double>>>  map = new ObjectMapper().readValue(reponse, HashMap.class);
@@ -57,102 +170,8 @@ public class API_EXT_INE {
         return coords;
     }
     
-     /*public  List<Double> coordinateAPI(String origine, String destionation) throws MalformedURLException, JsonProcessingException {
-    	 
-    	//Mise en place de RestTemplate pour la gestion des appels aux API
-     	RestTemplate restTemplate = new RestTemplate();
-     	
-     	//PARTIE 1 : API ADRESSE ETALAB GESTION
-         String etalabApiUrl = "https://api-adresse.data.gouv.fr/search/?q=" + addressForm.getAddress();                                     
-         //EtalabAdresseResponse etalabResponse = restTemplate.getForObject(etalabApiUrl, EtalabAdresseResponse.class);
-         //HttpEntity<String> request = new HttpEntity<String>();
-         ResponseEntity<HashMap> result = restTemplate.getForObject(etalabApiUrl, HashMap.class);
-         Map<String,ArrayList<ArrayList<Map<String,Map<String,String>>>>> list2=result.getBody();
-         //Récupérez les coordonnées depuis la réponse d'Etalab          	       	
-         double longitude = etalabResponse.getFeatures().get(0).getGeometry().getCoordinates().get(0);      
-         double latitude = etalabResponse.getFeatures().get(0).getGeometry().getCoordinates().get(1);
-         
-         // Affichez les informations de ETALAB recpéré dans la console
-         System.out.println("\nCity: " + city);
-         System.out.println("latitude: " + latitude);
-         System.out.println("longitude: " + longitude);
-    	 
-     }*/
-
-    /*public  List<Double> coordinateAPI(String origine, String destionation) throws MalformedURLException, JsonProcessingException {
-        URL url=new URL("https://api-adresse.data.gouv.fr/search/?q="+origine);
-        URL url1=new URL("https://api-adresse.data.gouv.fr/search/?q="+destionation);
-
-        String reponse= this.getJson(url);
-        String reponse1= this.getJson(url1);
-        System.out.println(reponse);
-        Map<String, ArrayList<ArrayList<Map<String,Map<String,Map<ArrayList, Double>>>>>>  map = new ObjectMapper().readValue(reponse1, HashMap.class);
-        Map<String, ArrayList<ArrayList<Map<String,Map<String,Map<ArrayList, Double>>>>>> map1 = new ObjectMapper().readValue(reponse1, HashMap.class);
-        double latutude1=map.get("features").get(0).get(0).get("geometry").get("coordinates").get(0);
-        double longitude1=map.get("features").get(0).get(0).get("geometry").get("coordinates").get(1);
-        double latutude2=map1.get("features").get(0).get(0).get("geometry").get("coordinates").get(0);
-        double longitude2=map1.get("features").get(0).get(0).get("geometry").get("coordinates").get(1);
-        List<Double> coords= new ArrayList<>();
-        coords.add(latutude1);
-        coords.add(longitude1);
-        coords.add(latutude2);
-        coords.add(longitude2);
-        return coords;
-    }*/
-    
-/*
-    public List<Double> coordinateAPI(String origine, String destination) throws Exception {
-        String apiUrl = "https://api-adresse.data.gouv.fr/search/?q=";
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> responseEntity1 = restTemplate.exchange(apiUrl + origine, HttpMethod.GET, null, String.class);
-        ResponseEntity<String> responseEntity2 = restTemplate.exchange(apiUrl + destination, HttpMethod.GET, null, String.class);
-        String reponse1 = responseEntity1.getBody();
-        String reponse2 = responseEntity2.getBody();
-        System.out.println(reponse1);
-        System.out.println(reponse2);
-        Map<String, Object> map1 = new ObjectMapper().readValue(reponse1, Map.class);
-        Map<String, Object> map2 = new ObjectMapper().readValue(reponse2, Map.class);
-        List<Double> coords1 = extractCoordinates(map1);
-        List<Double> coords2 = extractCoordinates(map2);
-        List<Double> coords = new ArrayList<>();
-        coords.addAll(coords1);
-        coords.addAll(coords2);
-        return coords;
-    }
-
-    private List<Double> extractCoordinates(Map<String, Object> map) {
-        double latitude = ((List<Double>) ((List<Object>) ((Map<String, Object>) ((List<Object>) map.get("features")).get(0)).get("geometry")).get(0)).get(1);
-        double longitude = ((List<Double>) ((List<Object>) ((Map<String, Object>) ((List<Object>) map.get("features")).get(0)).get("geometry")).get(0)).get(0);
-        System.out.println(latitude);
-        System.out.println(longitude);
-        List<Double> coordinates = new ArrayList<>();
-        coordinates.add(latitude);
-        coordinates.add(longitude);
-        return coordinates;
-    }*/
-        
-    public String dureeAPI(double latitude1,double longitude1, double latitude2,double longitude2) throws JsonProcessingException {
-    	//https://api.radar.io/v1/route/matrix?origins=49.119666,6.176905&destinations=49.470163,5.930146&mode=car&units=imperial
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        //headers.add("Authorization","prj_live_pk_a3274ce3fa36801a7bda77159ad771de9536cd0a");
-        //personJsonObject.put("userId",annonce.getUserId());
-        headers.add("Authorization","prj_live_pk_280ee05fafb20726b59d20ca99f945c6d6a4c2d9");
-        String createPersonUrl = "https://api.radar.io/v1/route/matrix?origins="+latitude1+","+longitude1+"&destinations="+latitude2+","+longitude2+"&mode=car&units=metric";
-        HttpEntity<String> request = new HttpEntity<String>(  headers);
-        //String personResultAsJsonStr =restTemplate.exchange(createPersonUrl, request, String.class);//C'est ça qui post
-        ResponseEntity<HashMap> result = restTemplate.exchange(createPersonUrl, HttpMethod.GET, request, HashMap.class);
-        Map<String,ArrayList<ArrayList<Map<String,Map<String,String>>>>> list2=result.getBody();
-        String duree=list2.get("matrix").get(0).get(0).get("duration").get("text");
-        System.out.println(duree+"\nheure est arrivée lhhihihihigigig\n");
-        return  duree;
-    }
 }
 
-//https://api.radar.io/v1/route/matrix?origins=49.119666,6.176905&destinations=49.470163,5.930146&mode=car&units=imperial
-//AIzaSyBN4_F3cBbadQ4x1PqZf6_OCktum1dmkJg
-//https://fr.distance24.org/route.json?stops=Metz|Villerupt
 
 
 

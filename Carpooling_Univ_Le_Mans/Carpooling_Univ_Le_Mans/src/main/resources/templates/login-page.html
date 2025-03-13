@@ -20,6 +20,10 @@
       </div>
       <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
         <form th:action="@{/authenticateTheUser}" method="POST" >
+        <!-- Ajout du logo -->
+        <div class="text-center mb-4">
+          <img src="https://i.imgur.com/q2J9Ij2.png" alt="University Logo" class="img-fluid mb-4" style="height: 100px;">
+        </div>
         <p class="text-center h1 font-weight-bold mb-4 mx-1 mx-md-2 mt-2">Welcome in Carpooling</p>
         <p class="text-center h1 font-weight-bold mb-4 mx-1 mx-md-2 mt-2">Sign in</p>
         
@@ -27,16 +31,18 @@
        
           <!-- Email input -->
           <div class="form-outline mb-4">
+            <label class="form-label" for="username">Username</label>
             <input input type="text" name="username" class="form-control form-control-lg"
               placeholder="Enter a valid username" required />
-            <label class="form-label" for="username">Username</label>
+           
           </div>
 
           <!-- Password input -->
           <div class="form-outline mb-3">
+            <label class="form-label" for="password">Password</label>
             <input input type="password" name="password" class="form-control form-control-lg"
               placeholder="Enter password" required />
-            <label class="form-label" for="password">Password</label>
+           
           </div>
           
           <!-- Place for messages: error, alert etc ... -->

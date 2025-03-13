@@ -1,104 +1,195 @@
-
-
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-<title>Login</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <title>My Trips</title>
+    <style>
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            z-index: 1030;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,.05);
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .profile-img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+        }
+        .btn {
+            border-radius: 25px;
+            padding: 8px 20px;
+        }
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            background: #fff;
+            padding: 15px;
+            box-shadow: 0 -2px 4px rgba(0,0,0,.1);
+        }
+        .main-content {
+            padding-top: 100px;
+            padding-bottom: 100px;
+            min-height: calc(100vh - 60px);
+        }
+        .page-title {
+            margin-top: 0;
+            margin-bottom: 30px;
+            color: #293878;
+            font-weight: 600;
+        }
+        .navbar-brand img {
+            height: 40px;
+            width: auto;
+            margin-right: 10px;
+        }
+        .date-time-box {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 8px 15px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        .date-box {
+            font-weight: 500;
+            color: #293878;
+        }
+        .time-box {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 2px;
+        }
+    </style>
 </head>
 
 <body class="bg-light">
-
-<!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-light "style="background-color: #293878; color: white; border-bottom: 1px solid #fff;">
-    <a class="navbar-brand text-white" href="#">Carpooling </a>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <a class="nav-link text-white" th:href="@{/home}">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white" th:href="@{/creer-annonce}">AddTrips</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link text-white" th:href="@{/liste-trajets-user}">MyTrips</a>
-            </li>
-             <li class="nav-item">
-                <a class="nav-link text-white" th:href="@{/liste-annonce}">SeeTrips</a>
-            </li>
-            <li>
-        <form th:action="@{/logout}" method="POST">
-			<input type="submit"  value="Logout" class="btn btn-danger btn-lg"></input>
-		</form></li>
-        </ul>
-    </div>
-</nav>
-
-<p class="text-center h1 font-weight-bold mb-4 mx-4 mx-md-4 mt-5">See My Trips</p>
-
-
-<table class="table align-middle mb-0 bg-white">
-  <thead class="bg-light">
-    <tr>
-      <th>User</th>
-      <th>Date</th>     
-      <th>Departure</th>     
-      <th>Destination</th>
-      <th>Status</th>
-    </tr>
-  </thead>
-  
-  <tbody>
-    <tr th:each="tempAnnonces: ${annonces}">        
-    
-      <td>
-        <div class="d-flex align-items-center">
-          <img
-              src="https://mdbootstrap.com/img/new/avatars/8.jpg"
-              alt=""
-              style="width: 45px; height: 45px"
-              class="rounded-circle"
-              />
-          <div class="ms-3">
-            <p class="fw-bold mb-1">Madeth May</p>
-            <p class="text-muted mb-0">May@gmail.com</p>
-          </div>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #293878;">
+        <a class="navbar-brand font-weight-bold" href="#">
+            <img src="https://i.imgur.com/q2J9Ij2.png" alt="Logo" class="d-inline-block align-top">
+            Carpooling
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/home}"><i class="fas fa-home mr-1"></i>Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/creer-annonce}"><i class="fas fa-plus-circle mr-1"></i>Add Trip</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" th:href="@{/liste-trajets-user}"><i class="fas fa-list mr-1"></i>My Trips</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/liste-annonce}"><i class="fas fa-search mr-1"></i>Find Trips</a>
+                </li>
+                <li class="nav-item">
+                    <form th:action="@{/logout}" method="POST">
+                        <button type="submit" class="btn btn-outline-light btn-sm"><i class="fas fa-sign-out-alt mr-1"></i>Logout</button>
+                    </form>
+                </li>
+            </ul>
         </div>
-      </td>
-      
-       <td th:text="${tempAnnonces.date}" />
-      </td>
-      
-        <td th:text="${tempAnnonces.depart}" />
-      </td>
-      
-        <td th:text="${tempAnnonces.arrive}" />
-      </td>
-      
-      <td>
-            <span th:switch="${statusList[tempAnnoncesStat.index]}">
-                  <span th:case="1"><a class="btn btn-info btn-sm" th:text="Details" th:href="@{/details(annonce_id=${tempAnnonces.id})}" /></span>
-                  <span th:case="2">Refusé</span>
-                  <span th:case="3"><a class="btn btn-info btn-sm" th:text="Details" th:href="@{/details(annonce_id=${tempAnnonces.id})}" /></span>
-                  <span th:case="4">Demande envoyée</span>
-              </span>    
-          </td>  
+    </nav>
+
+    <div class="container main-content">
+        <h2 class="text-center page-title">My Trips</h2>
         
-    </tr>  
-  </tbody>
-</table>
+        <div class="row">
+            <div class="col-12" th:each="tempAnnonces, iterStat : ${annonces}">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <img src="https://i.imgur.com/SqeYvlw.jpg" class="profile-img rounded-circle" alt="Profile">
+                            <div class="ml-3">
+                                <h5 class="mb-0" th:text="${userNames[iterStat.index]}">User Name</h5>
+                                <small class="text-muted" th:text="${userEmails[iterStat.index]}">user@email.com</small>
+                            </div>
+                            <div class="ml-auto">
+                                <span th:switch="${statusList[iterStat.index]}">
+                                    <span th:case="1">
+                                        <a class="btn btn-info" th:href="@{/details(annonce_id=${tempAnnonces.id})}">
+                                            <i class="fas fa-info-circle mr-1"></i>Details
+                                        </a>
+                                    </span>
+                                    <span th:case="2" class="badge badge-danger">
+                                        <i class="fas fa-times-circle mr-1"></i>Declined
+                                    </span>
+                                    <span th:case="3">
+                                        <a class="btn btn-info" th:href="@{/details(annonce_id=${tempAnnonces.id})}">
+                                            <i class="fas fa-info-circle mr-1"></i>Details
+                                        </a>
+                                    </span>
+                                    <span th:case="4" class="badge badge-warning">
+                                        <i class="fas fa-clock mr-1"></i>Pending
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="trip-details mt-4">
+                            <div class="row align-items-center">
+                                <div class="col-md-4">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-map-marker-alt text-primary"></i>
+                                        <span class="ml-2" th:text="${tempAnnonces.depart}">Departure</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <div class="date-time-box">
+                                        <div class="date-box">
+                                            <i class="far fa-calendar-alt mr-2"></i>
+                                            <span th:text="${#temporals.format(tempAnnonces.date, 'dd MMMM yyyy')}">22 March 2025</span>
+                                        </div>
+                                        <div class="time-box">
+                                            <i class="far fa-clock mr-2"></i>
+                                            <span th:text="${#temporals.format(tempAnnonces.date, 'HH:mm')}">08:00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="d-flex align-items-center justify-content-end">
+                                        <i class="fas fa-flag-checkered text-success"></i>
+                                        <span class="ml-2" th:text="${tempAnnonces.arrive}">Destination</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- Copyright -->
-<footer class="bg-white text-dark text-center py-3 fixed-bottom w-100" style="border-top: 2mm solid #007BFF">
-  <p>&copy; SANOGO KASSOUM | UNIV LE MANS</p>
-</footer>
-<!-- Bootstrap JavaScript and dependencies -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-vB8TKf3xKlwqvZYZY+F92cbWgUCkeO1x4z0REfvw1U+1LOt7X0WrsjR4k2CtnQhK" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JzKqIjtMsZ6q3GG89EBL2a+8XDqLOa2nxEcXjR7XKnJlwuGi5bMyTKsG+lnRZxq/z" crossorigin="anonymous"></script>
+    <footer class="footer">
+        <div class="container text-center">
+            <small class="text-muted">&copy; 2024 SANOGO KASSOUM | UNIV LE MANS</small>
+        </div>
+    </footer>
 
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>

@@ -1,0 +1,34 @@
+-- Insérer des utilisateurs test avec des mots de passe courts
+INSERT INTO user (first_name, last_name, email, password, ine) VALUES 
+('John', 'Doe', 'john@univ-lemans.fr', '1234', '123'),
+('Jane', 'Smith', 'jane@univ-lemans.fr', '4567', '456'),
+('Alice', 'Johnson', 'alice@univ-lemans.fr', '7890', '789'),
+('Bob', 'Martin', 'bob@univ-lemans.fr', 'abcd', '012');
+
+-- Vérifier les utilisateurs créés
+SELECT * FROM user;
+
+brew services start mysql
+
+# Navigate to your project directory
+cd /Users/kassoumsanogo/projet_perso/covoiturage/Carpooling_Univ_Le_Mans/Carpooling_Univ_Le_Mans
+
+# Make mvnw executable
+chmod +x mvnw
+
+# Run the application
+./mvnw spring-boot:run
+
+mysql -u root
+
+kassoum 1234
+madeth 1234
+jean 1234
+jack 1234
+antoine 1234
+geoffrey 1234
+kojji 1234
+
+
+new student 1008
+mdp 1234

@@ -15,25 +15,32 @@
 <body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="60">
 
 
+<!-- Nouvelle structure de la navbar -->
 <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
-        <span class="icon-bar"></span>                        
+        <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#myPage">Carpooling</a>
+      <a class="navbar-brand" href="#myPage">
+        <img src="https://i.imgur.com/q2J9Ij2.png" alt="Logo">
+        Carpooling
+      </a>
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#about">ABOUT</a></li>
-        <li><a href="#services">SERVICES</a></li>
-        <li><a href="#pricing">PRICING</a></li>
+        <li><a href="#about"><i class="fas fa-info-circle mr-2"></i>ABOUT</a></li>
+        <li><a href="#services"><i class="fas fa-cogs mr-2"></i>SERVICES</a></li>
+        <li><a href="#pricing"><i class="fas fa-tags mr-2"></i>PRICING</a></li>
         <li>
-        <form th:action="@{/logout}" method="POST">
-			<input type="submit"  value="LOGOUT" class="btn btn-danger btn-lg"></input>
-		</form></li>
+          <form th:action="@{/logout}" method="POST">
+            <button type="submit" class="btn btn-logout">
+              <i class="fas fa-sign-out-alt mr-2"></i>LOGOUT
+            </button>
+          </form>
+        </li>
       </ul>
     </div>
   </div>
@@ -42,14 +49,17 @@
 <div class="jumbotron text-center">
   <h1>CARPOOLING</h1> 
   <p>We specialize in carpooling for Univ Le Mans</p> 
-  <form class="form-inline">
-    <div class="input-group">
-      <input type="email" class="form-control" size="50" placeholder="Email Address" required>
-      <div class="input-group-btn">
-        <button type="button" class="btn btn-danger">Subscribe</button>
+  <div class="subscribe-section">
+    <form class="form-inline">
+      <div class="input-group">
+        <input type="email" class="form-control" size="50" placeholder="Email Address" required>
+        <div class="input-group-btn">
+          <button type="button" class="btn btn-danger">Subscribe</button>
+        </div>
       </div>
-    </div>
-  </form>
+    </form>
+  </div>
+  <img src="https://i.imgur.com/q2J9Ij2.png" alt="University Logo" class="university-logo">
 </div>
 
 
@@ -312,10 +322,26 @@
     margin-bottom: 30px;
   }  
   .jumbotron {
-    background-color: #293878;
+    background-color: #1a2657; /* Couleur plus foncée assortie */
     color: #fff;
     padding: 100px 25px;
     font-family: Montserrat, sans-serif;
+    position: relative;
+    overflow: hidden;
+  }
+  .university-logo {
+    position: absolute;
+    right: 15%;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 200px;
+    width: auto;
+  }
+  .subscribe-section {
+    position: relative;
+    z-index: 2;
+    max-width: 600px;
+    margin: 0 auto;
   }
   .container-fluid {
     padding: 60px 50px;
@@ -401,26 +427,59 @@
   }
   .navbar {
     margin-bottom: 0;
-    background-color: #293878;
+    background-color: #1a2657; /* Couleur plus foncée */
     z-index: 9999;
     border: 0;
-    font-size: 12px !important;
+    font-size: 14px !important;
     line-height: 1.42857143 !important;
-    letter-spacing: 4px;
+    letter-spacing: 2px;
     border-radius: 0;
-    font-family: Montserrat, sans-serif;
+    font-family: 'Montserrat', sans-serif;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 15px 0;
   }
-  .navbar li a, .navbar .navbar-brand {
+
+  .navbar-brand {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .navbar-brand img {
+    height: 40px;
+    margin-right: 10px;
+  }
+
+  .navbar li a {
     color: #fff !important;
+    font-weight: 500;
+    padding: 15px 20px !important;
+    transition: all 0.3s ease;
   }
-  .navbar-nav li a:hover, .navbar-nav li.active a {
-    color: #293878 !important;
-    background-color: #fff !important;
+
+  .navbar-nav li a:hover, 
+  .navbar-nav li.active a {
+    color: #1a2657 !important;
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 5px;
   }
-  .navbar-default .navbar-toggle {
-    border-color: transparent;
-    color: #fff !important;
+
+  .navbar .btn-logout {
+    background: transparent;
+    border: 2px solid #fff;
+    color: #fff;
+    padding: 8px 20px;
+    border-radius: 25px;
+    margin-left: 15px;
+    transition: all 0.3s ease;
   }
+
+  .navbar .btn-logout:hover {
+    background: #fff;
+    color: #1a2657;
+  }
+
   footer .glyphicon {
     font-size: 20px;
     margin-bottom: 20px;
@@ -441,9 +500,48 @@
         font-size: 150px;
     }
   }
-  </style>
+
+  /* Nouveaux styles pour les boutons */
+  .btn-success {
+    background-color: #0d5c3f !important;
+    border-color: #0d5c3f !important;
+  }
   
-  <style>
+  .btn-primary {
+    background-color: #1a2657 !important;
+    border-color: #1a2657 !important;
+  }
+  
+  .btn-warning {
+    background-color: #b36f00 !important;
+    border-color: #b36f00 !important;
+  }
+  
+  .btn-info {
+    background-color: #0c4c6e !important;
+    border-color: #0c4c6e !important;
+  }
+  
+  .btn-danger {
+    background-color: #8b0000 !important;
+    border-color: #8b0000 !important;
+  }
+
+  /* Effets de survol */
+  .btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+  }
+
+  /* Style pour le bouton Subscribe dans le jumbotron */
+  .jumbotron .input-group-btn .btn-danger {
+    font-weight: 600;
+    padding: 10px 30px;
+    font-size: 10px;
+  }
+  
   /* Additional CSS for square blocks */
   
     .square-block1 {

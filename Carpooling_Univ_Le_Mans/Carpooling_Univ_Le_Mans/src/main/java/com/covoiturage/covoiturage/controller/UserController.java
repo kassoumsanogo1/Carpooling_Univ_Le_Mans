@@ -77,14 +77,19 @@ public class UserController {
 
 
 	@GetMapping("/liste-annonce")
-	public String returnListOfAnnonces(Model theModel) throws MalformedURLException, JsonProcessingException {
-		int userId= presentation.getCurrentUserId();
-		List<Annonce> theAnnonces=  presentation.findAllAnnonces();
-		List<Integer> lastStatus= new ArrayList<>();
-		presentation.listeAnnonceAffichage(theAnnonces,lastStatus);
-		// add to the spring model
-		theModel.addAttribute("annonces", theAnnonces);
-		theModel.addAttribute("statusList", lastStatus);
+	public String listeAnnonce(Model model) throws MalformedURLException, JsonProcessingException {
+		List<Annonce> theAnnonces = presentation.findAllAnnonces();
+		List<Integer> lastStatus = new ArrayList<>();
+		List<String> userNames = new ArrayList<>();
+		List<String> userEmails = new ArrayList<>();
+		
+		presentation.listeAnnonceAffichage(theAnnonces, lastStatus, userNames, userEmails);
+		
+		model.addAttribute("annonces", theAnnonces);
+		model.addAttribute("statusList", lastStatus);
+		model.addAttribute("userNames", userNames);
+		model.addAttribute("userEmails", userEmails);
+		
 		return "liste-annonce";
 	}
 
@@ -95,13 +100,19 @@ public class UserController {
 	}
 
 	@GetMapping("/liste-trajets-user")
-	public String returnListOfTrajets(Model theModel) throws MalformedURLException, JsonProcessingException {
-		List<Annonce> theAnnonces= new ArrayList<>();
+	public String listeTrajetsUser(Model model) throws MalformedURLException, JsonProcessingException {
+		List<Annonce> theAnnonces = new ArrayList<>();
 		List<Integer> lesStatus = new ArrayList<>();
-		presentation.ListeDesTrajets(theAnnonces,lesStatus);
-		// add to the spring model
-		theModel.addAttribute("annonces", theAnnonces);
-		theModel.addAttribute("statusList", lesStatus);
+		List<String> userNames = new ArrayList<>();
+		List<String> userEmails = new ArrayList<>();
+		
+		presentation.ListeDesTrajets(theAnnonces, lesStatus, userNames, userEmails);
+		
+		model.addAttribute("annonces", theAnnonces);
+		model.addAttribute("statusList", lesStatus);
+		model.addAttribute("userNames", userNames);
+		model.addAttribute("userEmails", userEmails);
+		
 		return "liste-trajets-user";
 	}
 

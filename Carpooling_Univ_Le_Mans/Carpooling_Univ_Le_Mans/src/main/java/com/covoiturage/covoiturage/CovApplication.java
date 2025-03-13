@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServic
 public class CovApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(CovApplication.class, args);
+		System.out.println("Application started successfully!");
 		System.out.println("http://localhost:8090");
 	}
 }
